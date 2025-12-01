@@ -7,7 +7,7 @@ Carta vacia() => Carta(Tipo.Vacio, Tipo.Vacio);
 void main() {
   group('Lógica de Reyes (Solo Campesinos)', () {
 
-    test('01. Rey con Campesinos: Suma correctamente', () {
+    test('Rey con Campesinos: Suma correctamente', () {
       var piramide = [
         [c(Tipo.Rey, Tipo.Vacio), vacia()],
         [c(Tipo.Campesino, Tipo.Campesino), vacia(), vacia()],
@@ -16,7 +16,7 @@ void main() {
       expect(calcularPuntaje(piramide), equals(2));
     });
 
-    test('02. Rey con Sacerdotes y Criminales (SIN pareja): Suma 0', () {
+    test('Rey con Sacerdotes y Criminales SIN pareja: Suma 0', () {
       var piramide = [
         [c(Tipo.Rey, Tipo.Vacio), vacia()],
         [c(Tipo.Sacerdote, Tipo.Sacerdote), vacia(), vacia()],
@@ -25,7 +25,7 @@ void main() {
       expect(calcularPuntaje(piramide), equals(0));
     });
 
-    test('03. Rey con otros Reyes: Suma 0 (Ignorados)', () {
+    test('Rey con otros Reyes: Suma 0 ', () {
       var piramide = [
         [c(Tipo.Rey, Tipo.Rey), c(Tipo.Rey, Tipo.Rey)],
         [c(Tipo.Rey, Tipo.Rey), c(Tipo.Rey, Tipo.Rey), c(Tipo.Rey, Tipo.Rey)],
@@ -34,7 +34,7 @@ void main() {
       expect(calcularPuntaje(piramide), equals(0));
     });
 
-    test('04. Rey Mixto (Solo cuenta al Campesino)', () {
+    test('Rey Mixto (Solo cuenta al Campesino)', () {
       var piramide = [
         [c(Tipo.Rey, Tipo.Vacio), vacia()],
         [c(Tipo.Campesino, Tipo.Sacerdote), vacia(), vacia()], 
@@ -64,7 +64,7 @@ void main() {
       expect(calcularPuntaje(piramide), equals(2));
     });
 
-    test('07. Criminal rodeado de Sacerdotes: Solo 2 pts (No acumula)', () {
+    test('Criminal rodeado de Sacerdotes: Solo 2 pts (No acumula)', () {
       var piramide = [
         [vacia(), vacia()],
         [c(Tipo.Sacerdote, Tipo.Criminal), c(Tipo.Vacio, Tipo.Sacerdote), vacia()],
@@ -72,7 +72,8 @@ void main() {
       ];
       expect(calcularPuntaje(piramide), equals(2));
     });
-    test('07. Criminal rodeado de Sacerdotes: Solo 2 pts (No acumula)', () {
+
+    test('Criminal y Sacerdote separados en diagonal: 0 pts', () {
       var piramide = [
         [vacia(), vacia()],
         [c(Tipo.Sacerdote, Tipo.Vacio), c(Tipo.Vacio, Tipo.Criminal), vacia()],
@@ -80,7 +81,8 @@ void main() {
       ];
       expect(calcularPuntaje(piramide), equals(0));
     });
-     test('07. Criminal rodeado de Sacerdotes: Solo 2 pts (No acumula)', () {
+
+     test('Múltiples Criminales con Sacerdotes: 6 pts', () {
       var piramide = [
         [c(Tipo.Vacio,Tipo.Criminal), vacia()],
         [c(Tipo.Sacerdote, Tipo.Criminal), c(Tipo.Criminal, Tipo.Criminal), vacia()],
@@ -90,15 +92,106 @@ void main() {
     });
   });
 
-  group('Integración Completa', () {
-    test('08. Tablero Mixto: Rey ignora Criminales, Criminal puntúa con Sacerdote', () {
+  group('ENAMORADOS', () {
+
+    test('Enamorado Solitario', () {
+      var piramide = [
+        [vacia(), vacia()],
+        [vacia(), c(Tipo.Enamorado, Tipo.Vacio), vacia()],
+        [vacia(), vacia(), vacia(), vacia()]
+      ];
+      expect(calcularPuntaje(piramide), equals(0));
+    });
+
+    test('Misma Carta: 6 pts', () {
+      var piramide = [
+        [vacia(), vacia()],
+        [vacia(), vacia(), vacia()],
+        [c(Tipo.Enamorado, Tipo.Enamorado), vacia(), vacia(), vacia()]
+      ];
+      expect(calcularPuntaje(piramide), equals(6));
+    });
+
+    test('Vecinos Laterales: 6 pts', () {
+      var piramide = [
+        [vacia(), vacia()],
+        [vacia(), vacia(), vacia()],
+        [c(Tipo.Enamorado, Tipo.Vacio), c(Tipo.Enamorado, Tipo.Vacio), vacia(), vacia()]
+      ];
+      expect(calcularPuntaje(piramide), equals(6));
+    });
+
+    test('Vecinos Verticales: 6 pts', () {
+      var piramide = [
+        [vacia(), vacia()],
+        [c(Tipo.Vacio, Tipo.Enamorado), vacia(), vacia()],
+        [c(Tipo.Enamorado, Tipo.Vacio), vacia(), vacia(), vacia()]
+      ];
+      expect(calcularPuntaje(piramide), equals(6));
+    });
+
+    test('El TRIÁNGULO AMOROSO solo 1 pareja 6 pts', () {
+      var piramide = [
+        [vacia(), vacia()],
+        [vacia(), vacia(), vacia()],
+        [c(Tipo.Enamorado, Tipo.Vacio), c(Tipo.Enamorado, Tipo.Vacio), c(Tipo.Enamorado, Tipo.Vacio), vacia()]
+      ];
+      expect(calcularPuntaje(piramide), equals(6));
+    });
+
+    test('Cuadrado Amoroso 2 Parejas (12 pts)', () {
+      var piramide = [
+        [c(Tipo.Vacio, Tipo.Enamorado), vacia()],
+        [vacia(), c(Tipo.Enamorado, Tipo.Vacio), c(Tipo.Enamorado, Tipo.Enamorado)],
+        [vacia(), vacia(), vacia(), vacia()]
+      ];
+      expect(calcularPuntaje(piramide), equals(12));
+    });
+
+    test('zigzag', () {
+      var piramide = [
+        [vacia(), vacia()],
+        [c(Tipo.Enamorado, Tipo.Vacio),c(Tipo.Vacio,Tipo.Enamorado),c(Tipo.Enamorado, Tipo.Vacio)],
+        [vacia(), vacia(), vacia(), vacia()]
+      ];
+      expect(calcularPuntaje(piramide), equals(0));
+    });
+
+    test('Cadena Larga de Enamorados 2 Parejas 12 pts', () {
+      var piramide = [
+        [vacia(), vacia()],
+        [vacia(), vacia(), vacia()],
+        [c(Tipo.Enamorado, Tipo.Vacio), c(Tipo.Enamorado, Tipo.Vacio), c(Tipo.Enamorado, Tipo.Vacio), 
+        c(Tipo.Enamorado, Tipo.Vacio)]
+      ];
+      expect(calcularPuntaje(piramide), equals(12));
+    });
+    test('Ejemplo pizarron', () {
+      var piramide = [
+        [c(Tipo.Vacio, Tipo.Enamorado), vacia()],
+        [vacia(), c(Tipo.Enamorado, Tipo.Vacio), c(Tipo.Enamorado, Tipo.Enamorado)],
+        [vacia(), vacia(), vacia(), vacia()]
+      ];
+      expect(calcularPuntaje(piramide), equals(12));
+    });
+  });
+
+  group('Escenarios Mixtos', () {
+    test('Criminal puntúa con Sacerdote', () {
       var piramide = [
         [c(Tipo.Rey, Tipo.Vacio), vacia()],
-        // Criminal (ve Sacerdote -> +2) | Campesino (Rey lo ve -> +1)
         [c(Tipo.Criminal, Tipo.Sacerdote), c(Tipo.Campesino, Tipo.Vacio), vacia()],
         [vacia(), vacia(), vacia(), vacia()]
       ];
-      // Total esperado: 1 (del Rey) + 2 (del Criminal) = 3
+      expect(calcularPuntaje(piramide), equals(3));
+    });
+
+    test('Rey, Campesino, Criminal, Sacerdote y Enamorados', () {
+      var piramide = [
+        [c(Tipo.Rey, Tipo.Enamorado), c(Tipo.Enamorado, Tipo.Vacio)],
+        [c(Tipo.Campesino, Tipo.Vacio), vacia(), vacia()],
+        [c(Tipo.Criminal, Tipo.Sacerdote), vacia(), vacia(), vacia()]
+      ];
       expect(calcularPuntaje(piramide), equals(3));
     });
   });
@@ -110,7 +203,7 @@ void main() {
       return {'f': 2, 'c': pos - 1};
     }
 
-    test('09. Mapeo Correcto', () {
+    test('19. Mapeo Correcto', () {
       expect(traducir(1)['f'], equals(2));
       expect(traducir(5)['f'], equals(1));
       expect(traducir(9)['f'], equals(0));

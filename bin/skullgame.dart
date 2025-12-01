@@ -4,8 +4,8 @@ import 'skulls.dart';
 void main() {
   List<List<Carta>> piramide = _inicializarTableroVacio();
   
-  print('=== SKULLS OF SEDLEC: REGLAS ESTRICTAS ===');
-  print('Reyes solo suman Campesinos. Criminales (K) suman con Sacerdotes (S).');
+  print('=== SKULLS OF SEDLEC: ULTIMATE EDITION ===');
+  print('Roles: (R)ey, (C)ampesino, (S)acerdote, (K)riminal, (E)namorado.');
 
   bool continuar = true;
 
@@ -13,8 +13,8 @@ void main() {
     _imprimirTableroNumerado(piramide);
     
     print('\nOPCIONES:');
-    print(' [1] Colocar Carta (Posición 1-9)');
-    print(' [T] Terminar y Calcular');
+    print(' [1] Colocar Carta');
+    print(' [T] Terminar');
     
     String opcion = _leerTexto('Selecciona:').toUpperCase();
 
@@ -22,8 +22,6 @@ void main() {
       continuar = false;
     } else if (opcion == '1') {
       _gestionarTurno(piramide);
-    } else {
-      print('Opción no válida.');
     }
   }
 
@@ -34,66 +32,54 @@ void main() {
 }
 
 void _gestionarTurno(List<List<Carta>> piramide) {
-  int pos = _leerEntero('\n¿En qué posición (1-9) colocarás la carta?');
-  
-  if (pos < 1 || pos > 9) {
-    print('Error: Posición inválida (1-9).');
-    return;
-  }
+  int pos = _leerEntero('\n¿Posición (1-9)?');
+  if (pos < 1 || pos > 9) return;
 
   var coords = _traducirPosicion(pos);
   int f = coords['f']!;
   int c = coords['c']!;
 
-  print('>> Editando Posición $pos');
-  print('>> Tipos: R=Rey, C=Campesino, S=Sacerdote, K=Criminal, V=Vacio');
-  
-  piramide[f][c].arriba = _pedirTipo('   ¿Qué va ARRIBA?');
-  piramide[f][c].abajo = _pedirTipo('   ¿Qué va ABAJO? ');
-  
-  print('>> Carta colocada.');
+  print('>> Tipos: R, C, S, K, E (Enamorado), V');
+  piramide[f][c].arriba = _pedirTipo('   ¿Arriba?');
+  piramide[f][c].abajo = _pedirTipo('   ¿Abajo? ');
 }
 
-void _imprimirTableroNumerado(List<List<Carta>> piramide) {
+void _imprimirTableroNumerado(List<List<Carta>> p) {
   print('\n--- TABLERO ---');
-  String fila0 = '       8:[${_s(piramide[0][0])}] 9:[${_s(piramide[0][1])}]';
-  String fila1 = '    5:[${_s(piramide[1][0])}] 6:[${_s(piramide[1][1])}] 7:[${_s(piramide[1][2])}]';
-  String fila2 = ' 1:[${_s(piramide[2][0])}] 2:[${_s(piramide[2][1])}] 3:[${_s(piramide[2][2])}] 4:[${_s(piramide[2][3])}]';
-
-  print(fila0);
-  print(fila1);
-  print(fila2);
+  print('       8:[${_s(p[0][0])}] 9:[${_s(p[0][1])}]');
+  print('    5:[${_s(p[1][0])}] 6:[${_s(p[1][1])}] 7:[${_s(p[1][2])}]');
+  print(' 1:[${_s(p[2][0])}] 2:[${_s(p[2][1])}] 3:[${_s(p[2][2])}] 4:[${_s(p[2][3])}]');
 }
 
-String _s(Carta c) {
-  return '${_letra(c.arriba)}|${_letra(c.abajo)}';
-}
+String _s(Carta c) => '${_l(c.arriba)}|${_l(c.abajo)}';
 
-String _letra(Tipo t) {
+String _l(Tipo t) {
   switch (t) {
     case Tipo.Rey: return 'R';
     case Tipo.Campesino: return 'C';
     case Tipo.Sacerdote: return 'S';
     case Tipo.Criminal: return 'K';
+    case Tipo.Enamorado: return 'E'; // Nuevo rol
     case Tipo.Vacio: return ' ';
   }
 }
 
+// Helpers...
 Map<String, int> _traducirPosicion(int pos) {
   if (pos >= 8) return {'f': 0, 'c': pos - 8};
   if (pos >= 5) return {'f': 1, 'c': pos - 5};
   return {'f': 2, 'c': pos - 1};
 }
 
-Tipo _pedirTipo(String mensaje) {
+Tipo _pedirTipo(String m) {
   while (true) {
-    String input = _leerTexto(mensaje).toUpperCase();
-    if (input == 'R') return Tipo.Rey;
-    if (input == 'C') return Tipo.Campesino;
-    if (input == 'S') return Tipo.Sacerdote;
-    if (input == 'K') return Tipo.Criminal;
-    if (input == 'V') return Tipo.Vacio;
-    print('Error. Usa: R, C, S, K, V');
+    String i = _leerTexto(m).toUpperCase();
+    if (i == 'R') return Tipo.Rey;
+    if (i == 'C') return Tipo.Campesino;
+    if (i == 'S') return Tipo.Sacerdote;
+    if (i == 'K') return Tipo.Criminal;
+    if (i == 'E') return Tipo.Enamorado;
+    if (i == 'V') return Tipo.Vacio;
   }
 }
 
@@ -104,7 +90,6 @@ int _leerEntero(String m) {
     if(v != null) return v;
   }
 }
-
 String _leerTexto(String m) {
   stdout.write('$m ');
   return stdin.readLineSync()?.trim() ?? '';
